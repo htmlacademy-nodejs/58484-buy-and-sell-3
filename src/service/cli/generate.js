@@ -80,12 +80,18 @@ const getCategories = (min, max) => {
   return makeUniqueArray(categories);
 };
 
+const getType = () => {
+  const values = Object.values(OfferType);
+  const randomIndex = getRandomInt(0, values.length - 1);
+  return values[randomIndex];
+};
+
 const generateOffers = (count) => (
   Array(count).fill({}).map(() => ({
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
     description: shuffle(SENTENCES).slice(1, 5).join(` `),
-    type: Object.values(OfferType)[Math.floor(Math.random() * Object.values(OfferType).length)],
+    type: getType(),
     sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
     category: getCategories(1, CATEGORIES.length - 1),
   }))
@@ -107,11 +113,11 @@ module.exports = {
     fs.writeFile(FILE_NAME, content, (err) => {
       if (err) {
         console.error(`Can't write data to file...`);
-        process.exit(ExitCode.success);
+        process.exit(ExitCode.error);
       }
 
       console.info(`Operation success. File created.`);
-      process.exit(ExitCode.error);
+      process.exit(ExitCode.success);
     });
   }
 };

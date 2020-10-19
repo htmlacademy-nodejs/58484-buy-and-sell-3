@@ -6,13 +6,13 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const shuffle = (someArray) => {
-  for (let i = someArray.length - 1; i > 0; i--) {
-    const randomPosition = Math.floor(Math.random() * i);
-    [someArray[i], someArray[randomPosition]] = [someArray[randomPosition], someArray[i]];
-  }
+const shuffle = (array) => {
+  array.forEach((item, index) => {
+    const randomPosition = Math.floor(Math.random() * index);
+    [array[index], array[randomPosition]] = [array[randomPosition], array[index]];
+  })
 
-  return someArray;
+  return array;
 };
 
 const addLeadZero = (int) => {
@@ -24,9 +24,15 @@ const makeUniqueArray = (array) => {
   return Array.from(set);
 };
 
+const getRandomItem = (array) => {
+  const randomIndex = getRandomInt(0, array.length - 1);
+  return array[randomIndex];
+};
+
 module.exports = {
   getRandomInt,
   shuffle,
   addLeadZero,
   makeUniqueArray,
+  getRandomItem,
 };

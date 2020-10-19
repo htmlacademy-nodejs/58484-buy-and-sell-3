@@ -8,6 +8,7 @@ const {
   shuffle,
   addLeadZero,
   makeUniqueArray,
+  getRandomItem,
 } = require(`../../utils`);
 
 const DEFAULT_COUNT = 1;
@@ -80,18 +81,12 @@ const getCategories = (min, max) => {
   return makeUniqueArray(categories);
 };
 
-const getType = () => {
-  const values = Object.values(OfferType);
-  const randomIndex = getRandomInt(0, values.length - 1);
-  return values[randomIndex];
-};
-
 const generateOffers = (count) => (
   Array(count).fill({}).map(() => ({
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
     description: shuffle(SENTENCES).slice(1, 5).join(` `),
-    type: getType(),
+    type: getRandomItem(Object.values(OfferType)),
     sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
     category: getCategories(1, CATEGORIES.length - 1),
   }))
@@ -104,7 +99,7 @@ module.exports = {
 
     if (count > MAX_COUNT_LIMIT) {
       console.info(`Не больше 1000 объявлений`);
-      process.exit(ExitCode.error);
+      process.exit(ExitCode.ERROR);
     }
 
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
@@ -113,11 +108,10 @@ module.exports = {
     fs.writeFile(FILE_NAME, content, (err) => {
       if (err) {
         console.error(`Can't write data to file...`);
-        process.exit(ExitCode.error);
+        process.exit(ExitCode.ERROR);
       }
 
       console.info(`Operation success. File created.`);
-      process.exit(ExitCode.success);
     });
   }
 };

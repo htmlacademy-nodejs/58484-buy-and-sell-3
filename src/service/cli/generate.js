@@ -1,7 +1,15 @@
 'use strict';
 
 const fs = require(`fs`);
+const {promisify} = require(`util`);
 const {ExitCode} = require(`../../constants`);
+const {ChalkTheme} = require(`./chalk-theme`);
+
+const {
+  success,
+  error,
+  warning
+} = ChalkTheme.generate;
 
 const {
   getRandomInt,
@@ -92,26 +100,31 @@ const generateOffers = (count) => (
   }))
 );
 
+const createFile = async (content) => {
+  try {
+    const writeFile = promisify(fs.writeFile);
+
+    await writeFile(FILE_NAME, content);
+    console.info(success(`Operation success. File created.`));
+  } catch (e) {
+    console.error(error(`Can't write data to file... ${e.message}`));
+    process.exit(ExitCode.ERROR);
+  }
+}
+
 module.exports = {
   name: `--generate`,
-  run(args) {
+  async run(args) {
     const [count] = args;
 
     if (count > MAX_COUNT_LIMIT) {
-      console.info(`Не больше 1000 объявлений`);
+      console.info(warning(`Не больше 1000 объявлений`));
       process.exit(ExitCode.ERROR);
     }
 
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     const content = JSON.stringify(generateOffers(countOffer));
 
-    fs.writeFile(FILE_NAME, content, (err) => {
-      if (err) {
-        console.error(`Can't write data to file...`);
-        process.exit(ExitCode.ERROR);
-      }
-
-      console.info(`Operation success. File created.`);
-    });
+    await createFile(content);
   }
 };

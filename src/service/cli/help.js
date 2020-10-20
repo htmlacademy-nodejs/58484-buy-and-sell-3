@@ -1,5 +1,8 @@
 'use strict';
 
+const {ChalkTheme} = require(`./chalk-theme`);
+const {success} = ChalkTheme.help
+
 const commandText = `
   Программа запускает http-сервер и формирует файл с данными для API.
     Гайд:
@@ -14,6 +17,6 @@ const commandText = `
 module.exports = {
   name: `--help`,
   run() {
-    console.info(commandText);
+    console.info(success(commandText));
   }
 };

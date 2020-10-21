@@ -37,7 +37,6 @@ const getRandomItems = (array, min = 0, max = array.length) => {
   return makeUniqueArray(items);
 };
 
-
 module.exports = {
   getRandomInt,
   shuffle,

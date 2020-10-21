@@ -1,14 +1,16 @@
 'use strict';
 
-const fs = require(`fs`);
-const {promisify} = require(`util`);
-const {ExitCode} = require(`../../constants`);
+const fs = require(`fs`).promises;
 const {ChalkTheme} = require(`./chalk-theme`);
+const {
+  ExitCode,
+  MOCKS_FILE_NAME,
+} = require(`../../constants`);
 
 const {
   success,
   error,
-  warning
+  warning,
 } = ChalkTheme.generate;
 
 const {
@@ -21,7 +23,6 @@ const {
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT_LIMIT = 1000;
-const FILE_NAME = `mocks.json`;
 
 const MockFileName = {
   SENTENCES: `sentences.txt`,
@@ -50,9 +51,7 @@ const getPictureFileName = (int) => {
 
 const createFile = async (content) => {
   try {
-    const writeFile = promisify(fs.writeFile);
-
-    await writeFile(FILE_NAME, content);
+    await fs.writeFile(MOCKS_FILE_NAME, content);
     console.info(success(`Operation success. File created.`));
   } catch (e) {
     console.error(error(`Can't write data to file... ${e.message}`));
@@ -62,8 +61,7 @@ const createFile = async (content) => {
 
 const readFile = async (fileName) => {
   try {
-    const readFile = promisify(fs.readFile);
-    const data =  await readFile(fileName, `utf8`);
+    const data = await fs.readFile(fileName, `utf8`);
 
     return data
       .trim()

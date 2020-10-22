@@ -21,4 +21,4 @@ module.exports = {
   MOCKS_FILE_NAME,
   ExitCode,
   HttpCode,
-}
+};

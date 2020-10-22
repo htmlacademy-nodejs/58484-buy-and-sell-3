@@ -1,7 +1,7 @@
 'use strict';
 
 const {ChalkTheme} = require(`./chalk-theme`);
-const {success} = ChalkTheme.version
+const {success} = ChalkTheme.version;
 const packageJsonFile = require(`../../../package.json`);
 
 module.exports = {

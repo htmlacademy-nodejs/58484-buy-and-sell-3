@@ -4,7 +4,6 @@ const http = require(`http`);
 const fs = require(`fs`).promises;
 const {ChalkTheme} = require(`./chalk-theme`);
 const {success} = ChalkTheme.server;
-const {getFileContent} = require(`../../utils`);
 const {
   MOCKS_FILE_NAME,
   HttpCode,

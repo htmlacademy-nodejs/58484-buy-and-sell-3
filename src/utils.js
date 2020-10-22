@@ -10,7 +10,7 @@ const shuffle = (array) => {
   array.forEach((item, index) => {
     const randomPosition = Math.floor(Math.random() * index);
     [array[index], array[randomPosition]] = [array[randomPosition], array[index]];
-  })
+  });
 
   return array;
 };

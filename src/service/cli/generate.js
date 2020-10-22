@@ -57,7 +57,7 @@ const createFile = async (content) => {
     console.error(error(`Can't write data to file... ${e.message}`));
     process.exit(ExitCode.ERROR);
   }
-}
+};
 
 const readFile = async (fileName) => {
   try {
@@ -67,7 +67,8 @@ const readFile = async (fileName) => {
       .trim()
       .split(`\n`);
   } catch (e) {
-    console.error(error(`Can't read data from file... ${e.message}`))
+    console.error(error(`Can't read data from file... ${e.message}`));
+    return [];
   }
 };
 
@@ -80,7 +81,7 @@ const getMockData = async () => {
     sentences,
     titles,
     categories,
-  }
+  };
 };
 
 const generateOffers = async (count) => {
@@ -97,7 +98,7 @@ const generateOffers = async (count) => {
     type: getRandomItem(Object.values(OfferType)),
     sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
     category: getRandomItems(categories),
-  }))
+  }));
 };
 
 module.exports = {

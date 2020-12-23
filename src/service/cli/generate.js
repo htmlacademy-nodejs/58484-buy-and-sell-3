@@ -7,6 +7,7 @@ const {ChalkTheme} = require(`./chalk-theme`);
 const {
   ExitCode,
   MOCKS_FILE_NAME,
+  MAX_ID_LENGTH,
 } = require(`../../constants`);
 
 const {
@@ -25,7 +26,6 @@ const {
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT_LIMIT = 1000;
-const MAX_ID_LENGTH = 6;
 
 const MockFileName = {
   SENTENCES: `sentences.txt`,
@@ -101,8 +101,8 @@ const generateComment = (comments) => {
   return {
     id,
     text,
-  }
-}
+  };
+};
 
 const generateOffers = async (count) => {
   const commentsCount = getRandomInt(1, 5);

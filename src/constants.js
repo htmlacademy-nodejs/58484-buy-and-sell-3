@@ -18,6 +18,11 @@ const HttpCode = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
+const Env = {
+  DEVELOPMENT: `development`,
+  PRODUCTION: `production`
+};
+
 module.exports = {
   MAX_ID_LENGTH,
   DEFAULT_COMMAND,
@@ -25,4 +30,5 @@ module.exports = {
   MOCKS_FILE_NAME,
   ExitCode,
   HttpCode,
+  Env,
 };

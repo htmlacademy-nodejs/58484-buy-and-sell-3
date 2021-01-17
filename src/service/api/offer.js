@@ -7,14 +7,15 @@ const commentValidator = require(`../middlewares/comment-validator`);
 const offerExist = require(`../middlewares/offer-exist`);
 const commentExist = require(`../middlewares/comment-exist`);
 
-const route = new Router();
-
 module.exports = (app, offerService, commentService) => {
+  const route = new Router();
+
   app.use(`/offers`, route);
 
   route.get(`/`, (req, res) => {
     const offers = offerService.findAll();
-    res.status(HttpCode.OK)
+    res
+      .status(HttpCode.OK)
       .json(offers);
   });
 

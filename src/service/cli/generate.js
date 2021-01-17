@@ -77,10 +77,16 @@ const readFile = async (fileName) => {
 };
 
 const getMockData = async () => {
-  const sentences = await readFile(`./data/${MockFileName.SENTENCES}`);
-  const titles = await readFile(`./data/${MockFileName.TITLES}`);
-  const categories = await readFile(`./data/${MockFileName.CATEGORIES}`);
-  const comments = await readFile(`./data/${MockFileName.COMMENTS}`);
+  const files = Object
+    .values(MockFileName)
+    .map((fileName) => readFile(`./data/${fileName}`));
+
+  const [
+    sentences,
+    titles,
+    categories,
+    comments,
+  ] = await Promise.all(files);
 
   return {
     sentences,
@@ -105,7 +111,6 @@ const generateComment = (comments) => {
 };
 
 const generateOffers = async (count) => {
-  const commentsCount = getRandomInt(1, 5);
   const {
     sentences,
     titles,
@@ -121,7 +126,7 @@ const generateOffers = async (count) => {
     type: getRandomItem(Object.values(OfferType)),
     sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
     category: getRandomItems(categories),
-    comments: Array(commentsCount).fill({}).map(() => generateComment(comments)),
+    comments: Array(getRandomInt(1, 5)).fill({}).map(() => generateComment(comments)),
   }));
 };
 

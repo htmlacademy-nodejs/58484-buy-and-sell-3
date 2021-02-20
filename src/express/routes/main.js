@@ -2,13 +2,28 @@
 
 const {Router} = require(`express`);
 const mainRouter = new Router();
+const {getAPI} = require(`../api`);
 
-mainRouter.get(`/`, (req, res) => {
-  res.render(`main`);
+const api = getAPI();
+
+mainRouter.get(`/`, async (req, res) => {
+  const offers = await api.getOffers();
+  res.render(`main`, {offers});
 });
 
-mainRouter.get(`/search`, (req, res) => {
-  res.render(`search-result`);
+mainRouter.get(`/search`, async (req, res) => {
+  try {
+    const {search} = req.query;
+    const results = await api.search(search);
+
+    res.render(`search-result`, {
+      results
+    });
+  } catch (error) {
+    res.render(`search-result`, {
+      results: []
+    });
+  }
 });
 
 mainRouter.get(`/login`, (req, res) => {

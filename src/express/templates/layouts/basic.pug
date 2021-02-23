@@ -6,10 +6,17 @@ html(lang='ru')
     meta(http-equiv='X-UA-Compatible' content='ie=edge')
     title Куплю Продам
     link(rel='stylesheet' href='/css/style.min.css')
+    style.
+      ::marker {
+        font-size: 0;
+      }
 
   include ../parts/header
 
   body
+    mixin ticketLabel(type)
+      span(class!=attributes.class || `ticket-card__label`) #{type === `OFFER` ? `Куплю` : `Продам`}
+
     block content
 
   include ../parts/footer

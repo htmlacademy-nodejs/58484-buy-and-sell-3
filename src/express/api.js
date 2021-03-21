@@ -31,7 +31,7 @@ class API {
     return this._load(`/search`, {params: {query}});
   }
 
-  async getCategories() {
+  getCategories() {
     return this._load(`/categories`);
   }
 

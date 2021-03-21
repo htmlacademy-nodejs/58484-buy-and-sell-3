@@ -23,10 +23,8 @@ offersRouter.post(`/add`, uploader.single(`avatar`), async (req, res) => {
     category: body.category
   };
 
-  console.log(offerData);
-
   try {
-    await api.createOffer(`/offers`, offerData);
+    await api.createOffer(offerData);
     res.redirect(`/my`);
   } catch (err) {
     res.redirect(`back`);

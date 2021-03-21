@@ -6,6 +6,8 @@ const {getAPI} = require(`../api`);
 
 const api = getAPI();
 
+const OFFERS_COUNT = 3;
+
 myRouter.get(`/`, async (req, res) => {
   const offers = await api.getOffers();
 
@@ -15,7 +17,7 @@ myRouter.get(`/`, async (req, res) => {
 myRouter.get(`/comments`, async (req, res) => {
   const offers = await api.getOffers();
 
-  res.render(`comments`, {offers: offers.slice(0, 3)});
+  res.render(`comments`, {offers: offers.slice(0, OFFERS_COUNT)});
 });
 
 module.exports = myRouter;

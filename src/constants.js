@@ -4,6 +4,7 @@ const MAX_ID_LENGTH = 6;
 const DEFAULT_COMMAND = `--help`;
 const USER_ARGV_INDEX = 2;
 const MOCKS_FILE_NAME = `mocks.json`;
+const MOCKS_DB_FILE_NAME = `fill-db.sql`;
 const ExitCode = {
   SUCCESS: 0,
   ERROR: 1,
@@ -23,12 +24,33 @@ const Env = {
   PRODUCTION: `production`
 };
 
+const MockFileName = {
+  SENTENCES: `sentences.txt`,
+  TITLES: `titles.txt`,
+  CATEGORIES: `categories.txt`,
+  COMMENTS: `comments.txt`,
+};
+
+const OfferSumRestrict = {
+  MIN: 1000,
+  MAX: 100000,
+};
+
+const OfferPictureRestrict = {
+  MIN: 1,
+  MAX: 16,
+};
+
 module.exports = {
   MAX_ID_LENGTH,
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,
   MOCKS_FILE_NAME,
+  MOCKS_DB_FILE_NAME,
   ExitCode,
   HttpCode,
   Env,
+  MockFileName,
+  OfferSumRestrict,
+  OfferPictureRestrict,
 };

@@ -8,6 +8,9 @@ const {
   ExitCode,
   MOCKS_FILE_NAME,
   MAX_ID_LENGTH,
+  MockFileName,
+  OfferSumRestrict,
+  OfferPictureRestrict,
 } = require(`../../constants`);
 
 const {
@@ -27,26 +30,9 @@ const {
 const DEFAULT_COUNT = 1;
 const MAX_COUNT_LIMIT = 1000;
 
-const MockFileName = {
-  SENTENCES: `sentences.txt`,
-  TITLES: `titles.txt`,
-  CATEGORIES: `categories.txt`,
-  COMMENTS: `comments.txt`,
-};
-
-const SumRestrict = {
-  MIN: 1000,
-  MAX: 100000,
-};
-
 const OfferType = {
   OFFER: `offer`,
   SALE: `sale`,
-};
-
-const PictureRestrict = {
-  MIN: 1,
-  MAX: 16,
 };
 
 const getPictureFileName = (int) => {
@@ -121,10 +107,10 @@ const generateOffers = async (count) => {
   return Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
-    picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
+    picture: getPictureFileName(getRandomInt(OfferPictureRestrict.MIN, OfferPictureRestrict.MAX)),
     description: shuffle(sentences).slice(0, 5).join(` `),
     type: getRandomItem(Object.values(OfferType)),
-    sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
+    sum: getRandomInt(OfferSumRestrict.MIN, OfferSumRestrict.MAX),
     category: getRandomItems(categories),
     comments: Array(getRandomInt(1, 5)).fill({}).map(() => generateComment(comments)),
   }));

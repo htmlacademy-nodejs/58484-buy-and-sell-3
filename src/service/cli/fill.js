@@ -194,7 +194,13 @@ module.exports = {
           `('${text}', ${userId}, ${offerId})`
     ).join(`,\n`);
 
+    const typeValues = Object.values(OfferType).map(
+        ({title}) => `('${title}')`
+    ).join(`,\n`);
+
     const content = `
+      INSERT INTO types(title) VALUES
+        ${typeValues};
       INSERT INTO users(email, password_hash, first_name, last_name, avatar) VALUES
         ${userValues};
       INSERT INTO categories(name) VALUES

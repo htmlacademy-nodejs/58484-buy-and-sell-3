@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require(`express`);
+const sequelize = require(`../lib/sequelize`);
 
 const {ChalkTheme} = require(`./chalk-theme`);
 const {success} = ChalkTheme.server;
@@ -42,13 +43,26 @@ app.use((err, _req, _res, _next) => {
 
 module.exports = {
   name: `--server`,
-  run(args) {
+  async run(args) {
+    // Connect to database
+    try {
+      logger.info(`Trying to connect to database...`);
+      await sequelize.authenticate();
+    } catch (err) {
+      return logger.error(`An error occured: ${err.message}`);
+    }
+    logger.info(`Connection to database established`);
+
+    // Starting server
     const [customPort] = args;
     const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
 
-    app.listen(port, () => {
-      return logger.info(success(`Ожидаю соединений на ${port}`));
-    });
+    try {
+      await app.listen(port);
+    } catch (err) {
+      return logger.error(`An error occured: ${err.message}`);
+    }
 
+    return logger.info(success(`Server started on ${port} port`));
   }
 };

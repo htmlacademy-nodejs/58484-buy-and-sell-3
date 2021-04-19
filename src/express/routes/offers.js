@@ -20,7 +20,7 @@ offersRouter.post(`/add`, uploader.single(`avatar`), async (req, res) => {
     type: body.action,
     description: body.comment,
     title: body[`ticket-name`],
-    category: body.category
+    categories: body.category
   };
 
   try {
@@ -34,7 +34,7 @@ offersRouter.post(`/add`, uploader.single(`avatar`), async (req, res) => {
 
 offersRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
-  const offer = await api.getOffer(id);
+  const offer = await api.getOffer(id, true);
 
   res.render(`ticket`, {offer});
 });

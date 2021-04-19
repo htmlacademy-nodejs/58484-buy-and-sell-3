@@ -1,23 +1,25 @@
 'use strict';
 
-const {nanoid} = require(`nanoid`);
-
 const fs = require(`fs`).promises;
+
+const sequelize = require(`../lib/sequelize`);
+const initDatabase = require(`../lib/init-db`);
+
 const {ChalkTheme} = require(`./chalk-theme`);
 const {
   ExitCode,
-  MOCKS_FILE_NAME,
-  MAX_ID_LENGTH,
   MockFileName,
   OfferSumRestrict,
   OfferPictureRestrict,
+  USERS,
+  OfferType
 } = require(`../../constants`);
 
 const {
   success,
   error,
   warning,
-} = ChalkTheme.generate;
+} = ChalkTheme.filldb;
 
 const {
   getRandomInt,
@@ -29,24 +31,10 @@ const {
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT_LIMIT = 1000;
-
-const OfferType = {
-  OFFER: `offer`,
-  SALE: `sale`,
-};
+const MAX_CATEGORY_LIMIT = 3;
 
 const getPictureFileName = (int) => {
   return `item${addLeadZero(int)}.jpg`;
-};
-
-const createFile = async (content) => {
-  try {
-    await fs.writeFile(MOCKS_FILE_NAME, content);
-    console.info(success(`Operation success. File created.`));
-  } catch (e) {
-    console.error(error(`Can't write data to file... ${e.message}`));
-    process.exit(ExitCode.ERROR);
-  }
 };
 
 const readFile = async (fileName) => {
@@ -82,17 +70,24 @@ const getMockData = async () => {
   };
 };
 
-const generateComment = (comments) => {
+const generateCategories = (categories) => (
+  categories.map((title, index) => ({
+    id: index + 1,
+    title
+  }))
+);
+
+const generateComment = (comments, offerId, userCount) => {
   const maxRowsCount = getRandomInt(1, comments.length);
 
-  const id = nanoid(MAX_ID_LENGTH);
   const text = shuffle(comments)
     .slice(0, maxRowsCount)
     .join(` `);
 
   return {
-    id,
     text,
+    userId: getRandomInt(1, userCount),
+    offerId,
   };
 };
 
@@ -104,21 +99,30 @@ const generateOffers = async (count) => {
     comments,
   } = await getMockData();
 
-  return Array(count).fill({}).map(() => ({
-    id: nanoid(MAX_ID_LENGTH),
+  return Array(count).fill({}).map((_, index) => ({
     title: titles[getRandomInt(0, titles.length - 1)],
     picture: getPictureFileName(getRandomInt(OfferPictureRestrict.MIN, OfferPictureRestrict.MAX)),
     description: shuffle(sentences).slice(0, 5).join(` `),
-    type: getRandomItem(Object.values(OfferType)),
+    typeId: getRandomItem(Object.values(OfferType)).id,
     sum: getRandomInt(OfferSumRestrict.MIN, OfferSumRestrict.MAX),
-    category: getRandomItems(categories),
-    comments: Array(getRandomInt(1, 5)).fill({}).map(() => generateComment(comments)),
+    categories: getRandomItems(generateCategories(categories), 1, MAX_CATEGORY_LIMIT).map((category) => category.id),
+    comments: Array(getRandomInt(1, 5)).fill({}).map(() => generateComment(comments, index + 1, USERS.length)),
+    userId: getRandomItem(USERS).id
   }));
 };
 
 module.exports = {
-  name: `--generate`,
+  name: `--filldb`,
   async run(args) {
+    // Connect to database
+    try {
+      console.info(success(`Trying to connect to database...`));
+      await sequelize.authenticate();
+    } catch (err) {
+      return console.error(error(`An error occured: ${err.message}`));
+    }
+    console.info(success(`Connection to database established`));
+
     const [count] = args;
 
     if (count > MAX_COUNT_LIMIT) {
@@ -127,8 +131,15 @@ module.exports = {
     }
 
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const content = JSON.stringify(await generateOffers(countOffer));
 
-    await createFile(content);
+    const offers = await generateOffers(countOffer);
+    const categories = await readFile(`./data/${MockFileName.CATEGORIES}`);
+
+    // fill DB
+    console.info(success(`Trying to fill database...`));
+    await initDatabase(sequelize, {categories, offers});
+
+    console.info(success(`Database filled!`));
+    return process.exit(ExitCode.SUCCESS);
   }
 };

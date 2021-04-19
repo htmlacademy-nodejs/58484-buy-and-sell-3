@@ -1,12 +1,12 @@
 'use strict';
 
 const help = require(`./help`);
-const generate = require(`./generate`);
+const filldb = require(`./filldb`);
 const version = require(`./version`);
 const server = require(`./server`);
 
 const ChalkTheme = {
-  generate,
+  filldb,
   help,
   version,
   server,

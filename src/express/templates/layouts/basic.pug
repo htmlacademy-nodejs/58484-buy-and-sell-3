@@ -14,8 +14,15 @@ html(lang='ru')
   include ../parts/header
 
   body
+    - const getRandomInt = (max) => Math.ceil(Math.random()*max);
+
     mixin ticketLabel(type)
-      span(class!=attributes.class || `ticket-card__label`) #{type === `OFFER` ? `Куплю` : `Продам`}
+      span(class!=attributes.class || `ticket-card__label`) #{type.title === `offer` ? `Куплю` : `Продам`}
+
+    mixin categoryImage(category)
+     - const randomInt = getRandomInt(6)
+     - const idPadded = (randomInt === 1) ? `` : `0${randomInt}`
+       img(src=`/img/cat${idPadded}.jpg` srcset=`/img/cat${idPadded}@2x.jpg 2x` alt=category.name)
 
     block content
 

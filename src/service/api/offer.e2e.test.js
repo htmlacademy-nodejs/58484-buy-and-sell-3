@@ -2,179 +2,99 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
+const initDB = require(`../lib/init-db`);
 const offer = require(`./offer`);
 const DataService = require(`../data-service/offer`);
 const CommentService = require(`../data-service/comment`);
 const {HttpCode} = require(`../../constants`);
 
-const mockData = [
+const mockCategories = [
   {
-    'id': `UOxdYn`,
-    'title': `Продам коллекцию журналов «Огонёк» new.`,
-    'picture': `item12.jpg`,
-    'description': `Две страницы заляпаны свежим кофе. Таких предложений больше нет new! Две страницы заляпаны свежим кофе new. Таких предложений больше нет! При покупке с меня бесплатная доставка в черте города new.`,
-    'type': `offer`,
-    'sum': 43889,
-    'category': [
-      `Журналы new`,
-      `Разное`,
-      `Посуда new`
-    ],
-    'comments': [
-      {
-        'id': `QMjCyp`,
-        'text': `А где блок питания С чем связана продажа? Почему так дешёво?`
-      },
-      {
-        'id': `BH8jzs`,
-        'text': `С чем связана продажа? Почему так дешёво? А сколько игр в комплекте? Продаю в связи с переездом. Отрываю от сердца. Неплохо, но дорого Почему в таком ужасном состоянии? Совсем немного... Вы что?! В магазине дешевле.`
-      }
-    ]
+    id: 1,
+    name: `Животные`,
   },
   {
-    'id': `9D9EfA`,
-    'title': `Продам книги Стивена Кинга.`,
-    'picture': `item12.jpg`,
-    'description': `Мой дед не мог её сломать. Даю недельную гарантию. Не пытайтесь торговаться. Цену вещам я знаю new. При покупке с меня бесплатная доставка в черте города new. При покупке с меня бесплатная доставка в черте города.`,
-    'type': `sale`,
-    'sum': 59384,
-    'category': [
-      `Посуда`,
-      `Посуда new`,
-      `Журналы new`,
-      `Книги new`,
-      `Разное ne`
-    ],
-    'comments': [
-      {
-        'id': `SBqT-w`,
-        'text': `Продаю в связи с переездом. Отрываю от сердца. Совсем немного... Вы что?! В магазине дешевле. С чем связана продажа? Почему так дешёво? Оплата наличными или перевод на карту? Неплохо, но дорого А где блок питания`
-      },
-      {
-        'id': `CLbUuE`,
-        'text': `Совсем немного... Неплохо, но дорого Оплата наличными или перевод на карту?`
-      }
-    ]
+    id: 2,
+    name: `Журналы`
   },
   {
-    'id': `s7T-yb`,
-    'title': `Продам новую приставку Sony Playstation 5 new.`,
-    'picture': `item12.jpg`,
-    'description': `Кому нужен этот новый телефон, если тут такое... Мой дед не мог её сломать new. Кажется, что это хрупкая вещь. При покупке с меня бесплатная доставка в черте города. Две страницы заляпаны свежим кофе.`,
-    'type': `offer`,
-    'sum': 97270,
-    'category': [
-      `Разное new`,
-      `Животные`,
-      `Игры`,
-      `Журналы new`,
-      `Книги new`,
-      `Посуда new`,
-      `Игры new`
-    ],
-    'comments': [
-      {
-        'id': `x0l-VE`,
-        'text': `С чем связана продажа? Почему так дешёво? Продаю в связи с переездом. Отрываю от сердца. А где блок питания Почему в таком ужасном состоянии? Вы что?! В магазине дешевле. Неплохо, но дорого Оплата наличными или перевод на карту? Совсем немного... А сколько игр в комплекте?`
-      },
-      {
-        'id': `WnvzWE`,
-        'text': `Оплата наличными или перевод на карту? Неплохо, но дорого`
-      },
-      {
-        'id': `_Ylqbb`,
-        'text': `С чем связана продажа? Почему так дешёво? Совсем немного... А сколько игр в комплекте? А где блок питания`
-      }
-    ]
+    id: 3,
+    name: `Игры`
   },
   {
-    'id': `TujuDF`,
-    'title': `Продам отличную подборку фильмов на VHS.`,
-    'picture': `item11.jpg`,
-    'description': `Мой дед не мог её сломать new. Кажется, что это хрупкая вещь. Две страницы заляпаны свежим кофе new. Кому нужен этот новый телефон, если тут такое new... Продаю с болью в сердце...`,
-    'type': `sale`,
-    'sum': 59714,
-    'category': [
-      `Животные new`,
-      `Журналы`
-    ],
-    'comments': [
-      {
-        'id': `H9qmO_`,
-        'text': `Неплохо, но дорого Оплата наличными или перевод на карту? А где блок питания Продаю в связи с переездом. Отрываю от сердца. Совсем немного... С чем связана продажа? Почему так дешёво?`
-      },
-      {
-        'id': `a1fqN_`,
-        'text': `Почему в таком ужасном состоянии? Неплохо, но дорого С чем связана продажа? Почему так дешёво? А сколько игр в комплекте? Продаю в связи с переездом. Отрываю от сердца. Вы что?! В магазине дешевле. А где блок питания`
-      }
-    ]
-  },
-  {
-    'id': `phwSGM`,
-    'title': `Продам коллекцию журналов «Огонёк».`,
-    'picture': `item15.jpg`,
-    'description': `Две страницы заляпаны свежим кофе. Мой дед не мог её сломать new. Продаю с болью в сердце... При покупке с меня бесплатная доставка в черте города new. Если товар не понравится — верну всё до последней копейки.`,
-    'type': `offer`,
-    'sum': 57470,
-    'category': [
-      `Посуда`,
-      `Разное new`,
-      `Игры`,
-      `Посуда new`,
-      `Игры new`
-    ],
-    'comments': [
-      {
-        'id': `ONKM94`,
-        'text': `Вы что?! В магазине дешевле. Оплата наличными или перевод на карту? Почему в таком ужасном состоянии? С чем связана продажа? Почему так дешёво? А сколько игр в комплекте?`
-      },
-      {
-        'id': `wSnsWL`,
-        'text': `А где блок питания`
-      },
-      {
-        'id': `31bV2q`,
-        'text': `Вы что?! В магазине дешевле. Продаю в связи с переездом. Отрываю от сердца.`
-      },
-      {
-        'id': `nXtoZD`,
-        'text': `А сколько игр в комплекте? Совсем немного... С чем связана продажа? Почему так дешёво? Продаю в связи с переездом. Отрываю от сердца. Вы что?! В магазине дешевле. А где блок питания Неплохо, но дорого Почему в таком ужасном состоянии?`
-      },
-      {
-        'id': `2c6kDf`,
-        'text': `Почему в таком ужасном состоянии?`
-      }
-    ]
+    id: 4,
+    name: `Посуда`
   }
 ];
 
-const createAPI = () => {
+const mockOffers = [
+  {
+    'categories': [
+      mockCategories[0].id,
+      mockCategories[2].id
+    ],
+    'comments': [
+      {
+        'text': `С чем связана продажа? Почему так дешёво? Неплохо, но дорого. А где блок питания?`
+      },
+      {
+        'text': `А где блок питания?`
+      },
+      {
+        'text': `Оплата наличными или перевод на карту? Неплохо, но дорого. Почему в таком ужасном состоянии?`
+      }
+    ],
+    'description': `Бонусом отдам все аксессуары. Если товар не понравится — верну всё до последней копейки. Товар в отличном состоянии. Это настоящая находка для коллекционера!`,
+    'picture': `item13.jpg`,
+    'title': `Куплю антиквариат`,
+    'typeId': 1,
+    'sum': 10030,
+    'userId': 1
+  },
+  {
+    'categories': [
+      mockCategories[1].id
+    ],
+    'comments': [
+      {
+        'text': `Почему в таком ужасном состоянии?`
+      },
+      {
+        'text': `Продаю в связи с переездом. Отрываю от сердца.`
+      },
+      {
+        'text': `С чем связана продажа? Почему так дешёво? Вы что?! В магазине дешевле. Оплата наличными или перевод на карту?`
+      }
+    ],
+    'description': `Если товар не понравится — верну всё до последней копейки. Если найдёте дешевле — сброшу цену. При покупке с меня бесплатная доставка в черте города. Бонусом отдам все аксессуары.`,
+    'picture': `item12.jpg`,
+    'title': `Продам слона`,
+    'typeId': 1,
+    'sum': 96693,
+    'userId': 1
+  },
+];
+
+const createAPI = async () => {
+  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+  const categoriesName = mockCategories.map(({name}) => name);
+  await initDB(mockDB, {categories: categoriesName, offers: mockOffers});
   const app = express();
-  const cloneData = JSON.parse(JSON.stringify(mockData));
   app.use(express.json());
+  offer(app, new DataService(mockDB), new CommentService(mockDB));
 
-  offer(app, new DataService(cloneData), new CommentService());
   return app;
-};
-
-const newOffer = {
-  category: `Котики`,
-  title: `Дам погладить котика`,
-  description: `Дам погладить котика. Дорого. Не гербалайф`,
-  picture: `cat.jpg`,
-  type: `OFFER`,
-  sum: 100500
 };
 
 describe(`service/api/offer.js`, () => {
 
   describe(`API returns a list of all offers`, () => {
-    const app = createAPI();
-
     let response;
 
     beforeAll(async () => {
+      const app = await createAPI();
       response = await request(app)
         .get(`/offers`);
     });
@@ -184,32 +104,31 @@ describe(`service/api/offer.js`, () => {
     });
 
     it(`Returns a list of 5 offers`, () => {
-      expect(response.body.length).toBe(5);
+      expect(response.body.length).toBe(2);
     });
 
-    it(`First offer's id equals "UOxdYn"`, () => {
-      expect(response.body[0].id).toBe(`UOxdYn`);
+    it(`First offer's id equals 1`, () => {
+      expect(response.body[0].id).toBe(1);
     });
 
   });
 
   describe(`API returns an offer with given id`, () => {
-
-    const app = createAPI();
-
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app)
-        .get(`/offers/UOxdYn`);
+        .get(`/offers/1`);
     });
 
     it(`Status code 200`, () => {
       expect(response.statusCode).toBe(HttpCode.OK);
     });
 
-    it(`Offer's title is "Продам коллекцию журналов «Огонёк» new."`, () => {
-      expect(response.body.title).toBe(`Продам коллекцию журналов «Огонёк» new.`);
+    it(`Offer's title is "Куплю антиквариат"`, () => {
+      expect(response.body.title).toBe(`Куплю антиквариат`);
     });
 
     it(`Status code 404`, async () => {
@@ -222,11 +141,20 @@ describe(`service/api/offer.js`, () => {
   });
 
   describe(`API creates an offer if data is valid`, () => {
+    const newOffer = {
+      categories: [1, 2],
+      title: `Дам погладить котика`,
+      description: `Дам погладить котика. Дорого. Не гербалайф`,
+      picture: `cat.jpg`,
+      typeId: 1,
+      sum: 100500,
+    };
 
-    const app = createAPI();
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app)
         .post(`/offers`)
         .send(newOffer);
@@ -237,6 +165,7 @@ describe(`service/api/offer.js`, () => {
     });
 
     it(`Returns offer created`, () => {
+      delete newOffer.categories;
       expect(response.body).toEqual(expect.objectContaining(newOffer));
     });
 
@@ -244,14 +173,26 @@ describe(`service/api/offer.js`, () => {
       response = await request(app)
         .get(`/offers`);
 
-      expect(response.body.length).toBe(6);
+      expect(response.body.length).toBe(3);
     });
 
   });
 
   describe(`API refuses to create an offer if data is invalid`, () => {
+    const newOffer = {
+      categories: [1, 2],
+      title: `Дам погладить котика`,
+      description: `Дам погладить котика. Дорого. Не гербалайф`,
+      picture: `cat.jpg`,
+      typeId: 1,
+      sum: 100500,
+    };
 
-    const app = createAPI();
+    let app;
+
+    beforeAll(async () => {
+      app = await createAPI();
+    });
 
     it(`Without any required property response code is 400`, async () => {
       for (const key of Object.keys(newOffer)) {
@@ -270,13 +211,22 @@ describe(`service/api/offer.js`, () => {
   });
 
   describe(`API changes existent offer`, () => {
+    const newOffer = {
+      categories: [1],
+      title: `Дам погладить котика!`,
+      description: `Дам погладить котика. Дорого. Не гербалайф`,
+      picture: `cat.jpg`,
+      typeId: 1,
+      sum: 100500,
+    };
 
-    const app = createAPI();
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app)
-        .put(`/offers/UOxdYn`)
+        .put(`/offers/1`)
         .send(newOffer);
     });
 
@@ -285,27 +235,27 @@ describe(`service/api/offer.js`, () => {
     });
 
     it(`Returns changed offer`, () => {
-      expect(response.body).toEqual(expect.objectContaining(newOffer));
+      expect(response.body).toBeTruthy();
     });
 
-    it(`Offer have changed title equals "Дам погладить котика"`, async () => {
+    it(`Offer have changed title equals "Дам погладить котика!"`, async () => {
       response = await request(app)
-        .get(`/offers/UOxdYn`);
+        .get(`/offers/1`);
 
-      expect(response.body.title).toBe(`Дам погладить котика`);
+      expect(response.body.title).toBe(`Дам погладить котика!`);
     });
 
   });
 
   it(`API returns status code 404 when trying to change non-existent offer`, async () => {
-    const app = createAPI();
+    const app = await createAPI();
 
     const validOffer = {
-      category: `Это`,
+      categories: [1],
       title: `валидный`,
       description: `объект`,
       picture: `объявления`,
-      type: `однако`,
+      typeId: 1,
       sum: 404
     };
 
@@ -317,32 +267,31 @@ describe(`service/api/offer.js`, () => {
   });
 
   it(`API returns status code 400 when trying to change an offer with invalid data`, async () => {
-    const app = createAPI();
+    const app = await createAPI();
 
     const invalidOffer = {
-      category: `Это`,
+      categories: `Это`,
       title: `невалидный`,
       description: `объект`,
       picture: `объявления`,
-      type: `нет поля sum`
+      typeId: 1
     };
 
     const response = await request(app)
-      .put(`/offers/UOxdYn`)
+      .put(`/offers/1`)
       .send(invalidOffer);
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
   });
 
   describe(`API correctly deletes an offer`, () => {
-
-    const app = createAPI();
-
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app)
-        .delete(`/offers/UOxdYn`);
+        .delete(`/offers/1`);
     });
 
     it(`Status code 200`, () => {
@@ -350,21 +299,21 @@ describe(`service/api/offer.js`, () => {
     });
 
     it(`Returns deleted offer`, () => {
-      expect(response.body.id).toBe(`UOxdYn`);
+      expect(response.body).toBeTruthy();
     });
 
-    it(`Offer count is 4 now`, async () => {
+    it(`Offer count is 1 now`, async () => {
       response = await request(app)
         .get(`/offers`);
 
-      expect(response.body.length).toBe(4);
+      expect(response.body.length).toBe(1);
     });
 
   });
 
   it(`API refuses to delete non-existent offer`, async () => {
 
-    const app = createAPI();
+    const app = await createAPI();
 
     const response = await request(app)
       .delete(`/offers/NOEXST`);
@@ -381,7 +330,7 @@ describe(`service/api/offer.js`, () => {
       app = await createAPI();
 
       response = await request(app)
-        .get(`/offers/UOxdYn/comments`);
+        .get(`/offers/2/comments`);
     });
 
     it(`Status code 200`, () => {
@@ -389,11 +338,11 @@ describe(`service/api/offer.js`, () => {
     });
 
     it(`Returns list of 3 comments`, () => {
-      expect(response.body.length).toBe(2);
+      expect(response.body.length).toBe(3);
     });
 
-    it(`First comment's text is "А где блок питания С чем связана продажа? Почему так дешёво?"`, () => {
-      expect(response.body[0].text).toBe(`А где блок питания С чем связана продажа? Почему так дешёво?`);
+    it(`First comment's text is "Почему в таком ужасном состоянии?"`, () => {
+      expect(response.body[0].text).toBe(`Почему в таком ужасном состоянии?`);
     });
 
   });
@@ -411,7 +360,7 @@ describe(`service/api/offer.js`, () => {
       app = await createAPI();
 
       response = await request(app)
-        .post(`/offers/UOxdYn/comments`)
+        .post(`/offers/1/comments`)
         .send(newComment);
     });
 
@@ -421,16 +370,16 @@ describe(`service/api/offer.js`, () => {
 
     it(`Comments count is changed`, async () => {
       response = await request(app)
-        .get(`/offers/UOxdYn/comments`);
+        .get(`/offers/1/comments`);
 
-      expect(response.body.length).toBe(3);
+      expect(response.body.length).toBe(4);
     });
 
   });
 
   it(`API refuses to create a comment to non-existent offer and returns status code 404`, async () => {
 
-    const app = createAPI();
+    const app = await createAPI();
 
     const response = await request(app)
       .post(`/offers/NOEXST/comments`)
@@ -444,7 +393,7 @@ describe(`service/api/offer.js`, () => {
 
   it(`API refuses to delete non-existent comment`, async () => {
 
-    const app = createAPI();
+    const app = await createAPI();
 
     const response = await request(app)
       .delete(`/offers/UOxdYn/comments/NOEXST`);

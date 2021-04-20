@@ -14,7 +14,7 @@ const {
   success,
   error,
   warning,
-} = ChalkTheme.generate;
+} = ChalkTheme.filldb;
 
 const {
   getRandomInt,

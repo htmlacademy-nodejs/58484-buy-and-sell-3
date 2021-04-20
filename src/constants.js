@@ -41,6 +41,41 @@ const OfferPictureRestrict = {
   MAX: 16,
 };
 
+const OfferType = {
+  OFFER: {
+    id: 1,
+    title: `offer`
+  },
+  SALE: {
+    id: 2,
+    title: `sale`
+  },
+};
+
+const USERS = [
+  {
+    email: `ivanov@example.com`,
+    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
+    firstName: `Иван`,
+    lastName: `Иванов`,
+    avatar: `avatar1.jpg`
+  },
+  {
+    email: `petrov@example.com`,
+    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
+    firstName: `Пётр`,
+    lastName: `Петров`,
+    avatar: `avatar2.jpg`
+  },
+  {
+    email: `popov@example.com`,
+    passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
+    firstName: `Василий`,
+    lastName: `Васильев`,
+    avatar: `avatar3.jpg`
+  },
+];
+
 module.exports = {
   MAX_ID_LENGTH,
   DEFAULT_COMMAND,
@@ -53,4 +88,6 @@ module.exports = {
   MockFileName,
   OfferSumRestrict,
   OfferPictureRestrict,
+  OfferType,
+  USERS,
 };

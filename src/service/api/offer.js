@@ -13,8 +13,13 @@ module.exports = (app, offerService, commentService) => {
   app.use(`/offers`, route);
 
   route.get(`/`, async (req, res) => {
-    const {comments} = req.query;
-    const offers = await offerService.findAll(comments);
+    const {offset, limit, comments} = req.query;
+    let offers;
+    if (limit || offset) {
+      offers = await offerService.findPage({limit, offset});
+    } else {
+      offers = await offerService.findAll(comments);
+    }
 
     return res
       .status(HttpCode.OK)

@@ -33,14 +33,14 @@ class OfferService {
     return offers.map((item) => item.get());
   }
 
-  async findOne(id, needComments) {
+  findOne(id, needComments) {
     const include = [Aliase.CATEGORIES];
 
     if (needComments) {
       include.push(Aliase.COMMENTS);
     }
 
-    return await this._Offer.findByPk(id, {include});
+    return this._Offer.findByPk(id, {include});
   }
 
   async update(id, offer) {

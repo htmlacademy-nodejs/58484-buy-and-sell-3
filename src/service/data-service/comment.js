@@ -6,22 +6,22 @@ class CommentService {
     this._Comment = sequelize.models.Comment;
   }
 
-  async create(offerId, comment) {
-    return await this._Comment.create({
+  create(offerId, comment) {
+    return this._Comment.create({
       offerId,
       ...comment
     });
   }
 
-  async findAll(offerId) {
-    return await this._Comment.findAll({
+  findAll(offerId) {
+    return this._Comment.findAll({
       where: {offerId},
       raw: true
     });
   }
 
-  async findOne(id) {
-    return await this._Comment.findByPk(id);
+  findOne(id) {
+    return this._Comment.findByPk(id);
   }
 
   async drop(id) {

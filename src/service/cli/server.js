@@ -2,6 +2,7 @@
 
 const express = require(`express`);
 const sequelize = require(`../lib/sequelize`);
+const session = require(`../lib/session`);
 
 const {ChalkTheme} = require(`./chalk-theme`);
 const {success} = ChalkTheme.server;
@@ -17,6 +18,7 @@ const app = express();
 const logger = getLogger({name: `api`});
 
 app.use(express.json());
+app.use(session(sequelize));
 
 app.use((req, res, next) => {
   logger.debug(`Request on route ${req.url}`);

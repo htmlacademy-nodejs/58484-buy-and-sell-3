@@ -133,9 +133,16 @@ describe(`service/api/offer.js`, () => {
 
     it(`Status code 404`, async () => {
       response = await request(app)
-        .get(`/offers/UOxdYnTEST`);
+        .get(`/offers/999`);
 
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
+    });
+
+    it(`Status code 400`, async () => {
+      response = await request(app)
+        .get(`/offers/test`);
+
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
   });
@@ -183,7 +190,6 @@ describe(`service/api/offer.js`, () => {
       categories: [1, 2],
       title: `Дам погладить котика`,
       description: `Дам погладить котика. Дорого. Не гербалайф`,
-      picture: `cat.jpg`,
       typeId: 1,
       sum: 100500,
     };
@@ -206,6 +212,16 @@ describe(`service/api/offer.js`, () => {
         expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
       }
 
+    });
+
+    it(`Some new offer property is wrong type`, async () => {
+      const invalidOffer = {...newOffer, sum: `100500-wrong type`};
+
+      const response = await request(app)
+          .post(`/offers`)
+          .send(invalidOffer);
+
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
   });
@@ -260,7 +276,7 @@ describe(`service/api/offer.js`, () => {
     };
 
     const response = await request(app)
-      .put(`/offers/NOEXST`)
+      .put(`/offers/999`)
       .send(validOffer);
 
     expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
@@ -316,7 +332,7 @@ describe(`service/api/offer.js`, () => {
     const app = await createAPI();
 
     const response = await request(app)
-      .delete(`/offers/NOEXST`);
+      .delete(`/offers/999`);
 
     expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
   });
@@ -382,7 +398,7 @@ describe(`service/api/offer.js`, () => {
     const app = await createAPI();
 
     const response = await request(app)
-      .post(`/offers/NOEXST/comments`)
+      .post(`/offers/999/comments`)
       .send({
         text: `Неважно`
       });
@@ -396,9 +412,20 @@ describe(`service/api/offer.js`, () => {
     const app = await createAPI();
 
     const response = await request(app)
-      .delete(`/offers/UOxdYn/comments/NOEXST`);
+      .delete(`/offers/1/comments/999`);
 
     expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
+
+  });
+
+  it(`API refuses to delete comment and returned 400 if comment id is not numeric`, async () => {
+
+    const app = await createAPI();
+
+    const response = await request(app)
+      .delete(`/offers/1/comments/test`);
+
+    expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
 
   });
 });
